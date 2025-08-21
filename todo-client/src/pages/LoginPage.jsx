@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import API_URL from "../config";
 
-const LoginPage = ({ setToken }) => {
+const LoginPage = () => {
   const [form, setForm] = useState({ username: '', password: '' });
   const [isLogin, setIsLogin] = useState(true);
   const navigate = useNavigate();
@@ -14,22 +14,24 @@ const LoginPage = ({ setToken }) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    const url = isLogin ? `${API_URL}/api/auth/login` : `${API_URL}/api/auth/register`;
-    if (form.password.length < 6) {
-      alert('Password must be at least 6 characters long.');
-      return;
-    }
-     try {
-          const res = await axios.post(url, form);
-          localStorage.setItem('token', res.data.token);
-          if (setToken) setToken(res.data.token); // <--- Оновлюємо стан у App
-          navigate('/');
-        } catch (err) {
-          alert(err.response?.data?.message || 'Error');
-        }
-      };
+ const handleSubmit = async e => {
+   e.preventDefault();
+   const url = isLogin ? `${API_URL}/api/auth/login` : `${API_URL}/api/auth/register`;
+
+   if (form.password.length < 6) {
+     alert('Password must be at least 6 characters long.');
+     return;
+   }
+
+   try {
+     const res = await axios.post(url, form);
+     localStorage.setItem('token', res.data.token);
+     navigate('/', { replace: true });
+   } catch (err) {
+     alert(err.response?.data?.message || 'Error');
+   }
+ };
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 px-4">
