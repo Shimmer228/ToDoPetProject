@@ -25,7 +25,7 @@ const App = () => {
         />
         <Route
           path="/"
-          element={token ? <TodoPage /> : <Navigate to="/login" replace />}
+          element={token ? <TodoPage onSignOut={handleSignOut} /> : <Navigate to="/login" replace />}
         />
       </Routes>
     </Router>
