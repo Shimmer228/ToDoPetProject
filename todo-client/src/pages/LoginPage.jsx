@@ -25,6 +25,7 @@ const LoginPage = ({ setToken }) => {
           const res = await axios.post(url, form);
           localStorage.setItem('token', res.data.token);
           if (setToken) setToken(res.data.token); // <--- Оновлюємо стан у App
+          navigate('/');
         } catch (err) {
           alert(err.response?.data?.message || 'Error');
         }
