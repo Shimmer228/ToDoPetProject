@@ -17,7 +17,7 @@ const LoginPage = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     const url = isLogin ? `${API_URL}/api/auth/login` : `${API_URL}/api/auth/register`;
-
+    console.log("submit");
     if (form.password.length < 6) {
       alert('Password must be at least 6 characters long.');
       return;
@@ -25,7 +25,7 @@ const LoginPage = () => {
     try {
       const res = await axios.post(url, form);
       localStorage.setItem('token', res.data.token);
-      navigate('/todo');
+      navigate('/');
     } catch (err) {
       alert(err.response.data.message || 'Error');
     }
