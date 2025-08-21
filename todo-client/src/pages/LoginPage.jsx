@@ -24,12 +24,14 @@ const LoginPage = () => {
     }
     try {
       const res = await axios.post(url, form);
-      localStorage.setItem('token', res.data.token);
-      navigate('/');
+      const token = res.data.token;
+      localStorage.setItem('token', token);
+      navigate('/todo');
     } catch (err) {
-      alert(err.response.data.message || 'Error');
+      alert(err.response?.data?.message || 'Error');
     }
   };
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 px-4">

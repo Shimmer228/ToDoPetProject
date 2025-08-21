@@ -20,9 +20,9 @@ const TodoPage = () => {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    if (!token) return;
+     if (!token) navigate('/login');
     fetchTasks();
-  }, [token]);
+  }, [token, navigate]);
 
   const fetchTasks = async () => {
     try {
@@ -112,7 +112,7 @@ const TodoPage = () => {
     <div className="min-h-screen bg-gray-100 py-10 px-4">
       <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Ваші завдання</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Your tasks</h1>
           <button
             onClick={() => {
               localStorage.removeItem('token');
