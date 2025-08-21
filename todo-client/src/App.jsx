@@ -13,14 +13,18 @@ const App = () => {
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
-  return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<LoginPage setToken={setToken} />} />
-        <Route path="/" element={token ? <TodoPage /> : <Navigate to="/login" />} />
-      </Routes>
-    </Router>
-  );
-};
+   return (
+     <Routes>
+       <Route
+         path="/login"
+         element={token ? <Navigate to="/" replace /> : <LoginPage />}
+       />
+       <Route
+         path="/"
+         element={token ? <TodoPage /> : <Navigate to="/login" replace />}
+       />
+     </Routes>
+   );
+ };
 
 export default App;
