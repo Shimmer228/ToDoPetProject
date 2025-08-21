@@ -30,7 +30,7 @@ const TodoPage = () => {
       });
       setTasks(res.data);
     } catch (err) {
-      console.error('Помилка при завантаженні задач:', err);
+      console.error('Error loading tasks:', err);
     }
   };
 
@@ -46,7 +46,7 @@ const TodoPage = () => {
       setEditingPriority(1);
       fetchTasks();
     } catch (err) {
-      console.error('Помилка при редагуванні задачі:', err);
+      console.error('Error editing task:', err);
     }
   };
 
@@ -64,7 +64,7 @@ const TodoPage = () => {
       setNewPriority(1);
       fetchTasks();
     } catch (err) {
-      console.error('Помилка при створенні задачі:', err);
+      console.error('Error creating task:', err);
     }
   };
 
@@ -77,7 +77,7 @@ const TodoPage = () => {
       );
       fetchTasks();
     } catch (err) {
-      console.error('Помилка при оновленні статусу:', err);
+      console.error('Error updating status:', err);
     }
   };
 
@@ -88,7 +88,7 @@ const TodoPage = () => {
       });
       fetchTasks();
     } catch (err) {
-      console.error('Помилка при видаленні задачі:', err);
+      console.error('Error deleting task:', err);
     }
   };
 
@@ -119,7 +119,7 @@ const TodoPage = () => {
             }}
             className="bg-gray-200 text-gray-700 hover:bg-gray-300 px-3 py-1 rounded"
           >
-            Вийти
+            Sign out
           </button>
         </div>
 
@@ -129,7 +129,7 @@ const TodoPage = () => {
             type="text"
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
-            placeholder="Нове завдання..."
+            placeholder="New task..."
             className="flex-grow px-4 py-2 border rounded-md"
           />
           <input
@@ -137,14 +137,14 @@ const TodoPage = () => {
             min="1"
             value={newPriority}
             onChange={(e) => setNewPriority(Number(e.target.value))}
-            placeholder="Пріоритет"
+            placeholder="Priority"
             className="w-24 px-2 py-2 border rounded-md"
           />
           <button
             type="submit"
             className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
           >
-            Додати
+            Add
           </button>
         </form>
 
@@ -154,7 +154,7 @@ const TodoPage = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Пошук по назві..."
+            placeholder="Name search..."
             className="flex-grow px-3 py-2 border rounded-md"
           />
           <button
@@ -163,7 +163,7 @@ const TodoPage = () => {
             }
             className="ml-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
           >
-            Сортувати {sortOrder === 'asc' ? '↑' : '↓'}
+            Sort {sortOrder === 'asc' ? '↑' : '↓'}
           </button>
         </div>
 
@@ -175,7 +175,7 @@ const TodoPage = () => {
               filter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'
             }`}
           >
-            Всі
+            All
           </button>
           <button
             onClick={() => setFilter('done')}
@@ -183,7 +183,7 @@ const TodoPage = () => {
               filter === 'done' ? 'bg-blue-500 text-white' : 'bg-gray-200'
             }`}
           >
-            Виконані
+            Done
           </button>
           <button
             onClick={() => setFilter('undone')}
@@ -191,13 +191,13 @@ const TodoPage = () => {
               filter === 'undone' ? 'bg-blue-500 text-white' : 'bg-gray-200'
             }`}
           >
-            Невиконані
+            Not done
           </button>
         </div>
 
         {/* Список завдань */}
         {tasks.length === 0 ? (
-          <p className="text-center text-gray-500">Завдань поки немає</p>
+          <p className="text-center text-gray-500">No tasks for now</p>
         ) : (
           <ul className="space-y-3">
             {filteredTasks.map((task) => (
@@ -239,7 +239,7 @@ const TodoPage = () => {
                         onClick={() => handleUpdateTask(task._id)}
                         className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
                       >
-                        Зберегти
+                        Save
                       </button>
                     </div>
                   ) : (
@@ -254,7 +254,7 @@ const TodoPage = () => {
                         {task.title}
                       </span>
                       <span className="text-sm text-gray-600">
-                        Пріоритет: {task.priority}
+                        Priority: {task.priority}
                       </span>
                     </>
                   )}
@@ -278,7 +278,7 @@ const TodoPage = () => {
                   onClick={() => handleDelete(task._id)}
                   className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
                 >
-                  Видалити
+                  Delete
                 </button>
               </li>
             ))}

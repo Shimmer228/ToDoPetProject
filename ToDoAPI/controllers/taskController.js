@@ -30,7 +30,7 @@ exports.updateTaskStatus = async (req, res) => {
       { new: true }
     );
 
-    if (!task) return res.status(404).json({ message: 'Задачу не знайдено' });
+    if (!task) return res.status(404).json({ message: 'Task not found' });
 
     res.json(task);
   } catch (err) {
@@ -73,7 +73,7 @@ exports.updateTask = async (req, res) => {
     res.json(task);
   } catch (err) {
     console.error("Помилка при оновленні:", err);
-    res.status(500).json({ message: "Помилка сервера" });
+    res.status(500).json({ message: "Server error" });
   }
 };
 

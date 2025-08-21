@@ -18,7 +18,7 @@ const LoginPage = () => {
     const url = isLogin ? '/api/auth/login' : '/api/auth/register';
 
     if (form.password.length < 6) {
-      alert('Пароль має бути не менше 6 символів');
+      alert('Password must be at least 6 characters long.');
       return;
     }
     try {
@@ -26,7 +26,7 @@ const LoginPage = () => {
       localStorage.setItem('token', res.data.token);
       navigate('/');
     } catch (err) {
-      alert(err.response.data.message || 'Помилка');
+      alert(err.response.data.message || 'Error');
     }
   };
 
@@ -34,12 +34,12 @@ const LoginPage = () => {
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 px-4">
       <div className="bg-white shadow-md rounded-xl p-6 w-full max-w-xs">
         <h2 className="text-2xl font-semibold mb-4 text-center">
-          {isLogin ? 'Вхід' : 'Реєстрація'}
+          {isLogin ? 'Sign in' : 'Sign up'}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-3">
           <input
             name="username"
-            placeholder="Ім'я користувача"
+            placeholder="Username"
             onChange={handleChange}
             required
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -47,7 +47,7 @@ const LoginPage = () => {
           <input
             type="password"
             name="password"
-            placeholder="Пароль"
+            placeholder="Password"
             onChange={handleChange}
             required
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -56,7 +56,7 @@ const LoginPage = () => {
             type="submit"
             className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md transition"
           >
-            {isLogin ? 'Увійти' : 'Зареєструватися'}
+            {isLogin ? 'Sign in' : 'Sign up'}
           </button>
         </form>
         <p
@@ -64,8 +64,8 @@ const LoginPage = () => {
           className="text-sm text-blue-700 hover:underline text-center mt-4 cursor-pointer"
         >
           {isLogin
-            ? 'Немає акаунта? Зареєструватися'
-            : 'Є акаунт? Увійти'}
+            ? 'have no account? Sign up'
+            : 'Have account? Sign in'}
         </p>
       </div>
     </div>
