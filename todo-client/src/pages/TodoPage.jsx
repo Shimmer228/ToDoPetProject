@@ -1,17 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import axios from 'axios';
 
 const TodoPage = () => {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState('');
+  const [newPriority, setNewPriority] = useState(1);
+
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editingTitle, setEditingTitle] = useState('');
+  const [editingPriority, setEditingPriority] = useState(1);
+
   const [filter, setFilter] = useState('all'); // all | done | undone
+  const [sortOrder, setSortOrder] = useState('asc'); // asc | desc
+  const [searchQuery, setSearchQuery] = useState('');
+
   const navigate = useNavigate();
-
-
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -29,28 +33,35 @@ const TodoPage = () => {
       console.error('Помилка при завантаженні задач:', err);
     }
   };
-const handleUpdateTitle = async (taskId) => {
-  try {
-    await axios.patch(`/api/tasks/${taskId}`, { title: editingTitle }, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    setEditingTaskId(null);
-    setEditingTitle('');
-    fetchTasks();
-  } catch (err) {
-    console.error('Помилка при редагуванні задачі:', err);
-  }
-};
+
+  const handleUpdateTask = async (taskId) => {
+    try {
+      await axios.put(
+        `/api/tasks/${taskId}`,
+        { title: editingTitle, priority: editingPriority },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setEditingTaskId(null);
+      setEditingTitle('');
+      setEditingPriority(1);
+      fetchTasks();
+    } catch (err) {
+      console.error('Помилка при редагуванні задачі:', err);
+    }
+  };
 
   const handleAddTask = async (e) => {
     e.preventDefault();
     if (!newTask.trim()) return;
 
     try {
-      await axios.post('/api/tasks', { title: newTask }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.post(
+        '/api/tasks',
+        { title: newTask, priority: newPriority },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setNewTask('');
+      setNewPriority(1);
       fetchTasks();
     } catch (err) {
       console.error('Помилка при створенні задачі:', err);
@@ -59,9 +70,11 @@ const handleUpdateTitle = async (taskId) => {
 
   const handleToggleStatus = async (taskId, currentStatus) => {
     try {
-      await axios.patch(`/api/tasks/${taskId}`, { completed: !currentStatus }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.patch(
+        `/api/tasks/${taskId}`,
+        { completed: !currentStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       fetchTasks();
     } catch (err) {
       console.error('Помилка при оновленні статусу:', err);
@@ -79,29 +92,36 @@ const handleUpdateTitle = async (taskId) => {
     }
   };
 
-  const filteredTasks = tasks.filter(task => {
-    if (filter === 'done') return task.completed;
-    if (filter === 'undone') return !task.completed;
-    return true;
-  });
-
+  const filteredTasks = tasks
+    .filter((task) => {
+      if (filter === 'done') return task.completed;
+      if (filter === 'undone') return !task.completed;
+      return true;
+    })
+    .filter((task) =>
+      task.title.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a, b) => {
+      return sortOrder === 'asc'
+        ? a.priority - b.priority
+        : b.priority - a.priority;
+    });
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4">
       <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">Ваші завдання</h1>
-            <button
-              onClick={() => {
-                localStorage.removeItem('token');
-                navigate('/login');
-              }}
-              className="bg-gray-200 text-gray-700 hover:bg-gray-300 px-3 py-1 rounded"
-            >
-              Вийти
-            </button>
-          </div>
-        <h1 className="text-2xl font-bold mb-4 text-center text-gray-800">Ваші завдання</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-800">Ваші завдання</h1>
+          <button
+            onClick={() => {
+              localStorage.removeItem('token');
+              navigate('/login');
+            }}
+            className="bg-gray-200 text-gray-700 hover:bg-gray-300 px-3 py-1 rounded"
+          >
+            Вийти
+          </button>
+        </div>
 
         {/* Додавання нової задачі */}
         <form onSubmit={handleAddTask} className="flex space-x-2 mb-6">
@@ -110,40 +130,77 @@ const handleUpdateTitle = async (taskId) => {
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
             placeholder="Нове завдання..."
-            className="flex-grow px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="flex-grow px-4 py-2 border rounded-md"
+          />
+          <input
+            type="number"
+            min="1"
+            value={newPriority}
+            onChange={(e) => setNewPriority(Number(e.target.value))}
+            placeholder="Пріоритет"
+            className="w-24 px-2 py-2 border rounded-md"
           />
           <button
             type="submit"
-            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
           >
             Додати
           </button>
         </form>
+
+        {/* Пошук і сортування */}
+        <div className="flex justify-between items-center mb-4">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Пошук по назві..."
+            className="flex-grow px-3 py-2 border rounded-md"
+          />
+          <button
+            onClick={() =>
+              setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+            }
+            className="ml-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+          >
+            Сортувати {sortOrder === 'asc' ? '↑' : '↓'}
+          </button>
+        </div>
+
+        {/* Фільтри */}
         <div className="flex justify-center gap-2 mb-4">
           <button
             onClick={() => setFilter('all')}
-            className={`px-3 py-1 rounded ${filter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            className={`px-3 py-1 rounded ${
+              filter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+            }`}
           >
             Всі
           </button>
           <button
             onClick={() => setFilter('done')}
-            className={`px-3 py-1 rounded ${filter === 'done' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            className={`px-3 py-1 rounded ${
+              filter === 'done' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+            }`}
           >
             Виконані
           </button>
           <button
             onClick={() => setFilter('undone')}
-            className={`px-3 py-1 rounded ${filter === 'undone' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            className={`px-3 py-1 rounded ${
+              filter === 'undone' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+            }`}
           >
             Невиконані
           </button>
         </div>
+
+        {/* Список завдань */}
         {tasks.length === 0 ? (
           <p className="text-center text-gray-500">Завдань поки немає</p>
         ) : (
           <ul className="space-y-3">
-            {filteredTasks.map(task => (
+            {filteredTasks.map((task) => (
               <li
                 key={task._id}
                 className={`p-4 rounded shadow flex justify-between items-center ${
@@ -154,37 +211,62 @@ const handleUpdateTitle = async (taskId) => {
                   <input
                     type="checkbox"
                     checked={task.completed}
-                    onChange={() => handleToggleStatus(task._id, task.completed)}
+                    onChange={() =>
+                      handleToggleStatus(task._id, task.completed)
+                    }
                     className="w-5 h-5 text-green-600 accent-green-600"
                   />
 
                   {editingTaskId === task._id ? (
-                    <input
-                      type="text"
-                      value={editingTitle}
-                      onChange={(e) => setEditingTitle(e.target.value)}
-                      onBlur={() => handleUpdateTitle(task._id)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleUpdateTitle(task._id);
-                      }}
-                      className="flex-1 px-2 py-1 border rounded"
-                      autoFocus
-                    />
+                    <div className="flex gap-2 flex-1">
+                      <input
+                        type="text"
+                        value={editingTitle}
+                        onChange={(e) => setEditingTitle(e.target.value)}
+                        className="flex-1 px-2 py-1 border rounded"
+                        autoFocus
+                      />
+                      <input
+                        type="number"
+                        min="1"
+                        value={editingPriority}
+                        onChange={(e) =>
+                          setEditingPriority(Number(e.target.value))
+                        }
+                        className="w-20 px-2 py-1 border rounded"
+                      />
+                      <button
+                        onClick={() => handleUpdateTask(task._id)}
+                        className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
+                      >
+                        Зберегти
+                      </button>
+                    </div>
                   ) : (
-                    <span
-                      className={`text-lg flex-1 ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'}`}
-                    >
-                      {task.title}
-                    </span>
+                    <>
+                      <span
+                        className={`text-lg flex-1 ${
+                          task.completed
+                            ? 'line-through text-gray-500'
+                            : 'text-gray-800'
+                        }`}
+                      >
+                        {task.title}
+                      </span>
+                      <span className="text-sm text-gray-600">
+                        Пріоритет: {task.priority}
+                      </span>
+                    </>
                   )}
                 </div>
 
-                {/* Кнопка редагування */}
+                {/* Кнопки */}
                 {editingTaskId !== task._id && (
                   <button
                     onClick={() => {
                       setEditingTaskId(task._id);
                       setEditingTitle(task.title);
+                      setEditingPriority(task.priority);
                     }}
                     className="text-blue-600 hover:underline text-sm mr-2"
                   >
@@ -192,7 +274,6 @@ const handleUpdateTitle = async (taskId) => {
                   </button>
                 )}
 
-                {/* Кнопка видалення */}
                 <button
                   onClick={() => handleDelete(task._id)}
                   className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"

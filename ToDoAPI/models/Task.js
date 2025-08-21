@@ -15,6 +15,12 @@ const taskSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    priority: {
+     type: Number,
+     default: 5,
+     min: 1,
+     max: 10,
+      },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Task', taskSchema);

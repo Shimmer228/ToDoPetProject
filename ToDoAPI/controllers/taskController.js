@@ -6,17 +6,18 @@ exports.getTasks = async (req, res) => {
 };
 
 exports.createTask = async (req, res) => {
-    const { title } = req.body;
+    const { title, priority } = req.body;
     if (!title) return res.status(400).json({ message: 'Title is required' });
-
     const newTask = await Task.create({
         user: req.user._id,
+        priority: priority >= 1 && priority <= 10 ? priority : 5,
         title,
     });
 
     res.status(201).json(newTask);
 };
 exports.updateTaskStatus = async (req, res) => {
+    console.log("status");
   try {
     const { completed, title } = req.body;
     const updateFields = {};
@@ -40,14 +41,40 @@ exports.updateTaskStatus = async (req, res) => {
 
 
 exports.updateTask = async (req, res) => {
-    const { id } = req.params;
-    const task = await Task.findOne({ _id: id, user: req.user._id });
+  console.log("updateTask called", req.body);
 
-    if (!task) return res.status(404).json({ message: 'Task not found' });
+  try {
+    const { title, completed, priority } = req.body;
+    const updateFields = {};
 
-    task.completed = !task.completed;
-    await task.save();
+    if (typeof title === "string" && title.trim() !== "") {
+      updateFields.title = title.trim();
+    }
+
+    if (typeof completed === "boolean") {
+      updateFields.completed = completed;
+    }
+
+    if (priority !== undefined) {
+      const numPriority = parseInt(priority, 10);
+      updateFields.priority = Math.min(Math.max(numPriority, 1), 10);
+    }
+
+    const task = await Task.findOneAndUpdate(
+      { _id: req.params.id, user: req.user._id },
+      updateFields,
+      { new: true }
+    );
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
     res.json(task);
+  } catch (err) {
+    console.error("Помилка при оновленні:", err);
+    res.status(500).json({ message: "Помилка сервера" });
+  }
 };
 
 exports.deleteTask = async (req, res) => {
@@ -57,4 +84,27 @@ exports.deleteTask = async (req, res) => {
     if (!task) return res.status(404).json({ message: 'Task not found' });
 
     res.json({ message: 'Task deleted' });
+};
+
+exports.getTasks = async (req, res) => {
+  try {
+    const { search, sort } = req.query;
+    let query = { user: req.user.id };
+
+    if (search) {
+      query.title = { $regex: search, $options: "i" }; // case-insensitive
+    }
+
+    let tasks = await Task.find(query);
+
+    if (sort === "asc") {
+      tasks = tasks.sort((a, b) => a.priority - b.priority);
+    } else if (sort === "desc") {
+      tasks = tasks.sort((a, b) => b.priority - a.priority);
+    }
+
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
