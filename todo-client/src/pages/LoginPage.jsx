@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import API_URL from "../config";
 
-const LoginPage = () => {
+const LoginPage = ({ setToken }) => {
   const [form, setForm] = useState({ username: '', password: '' });
   const [isLogin, setIsLogin] = useState(true);
   const navigate = useNavigate();
@@ -21,14 +21,14 @@ const LoginPage = () => {
       alert('Password must be at least 6 characters long.');
       return;
     }
-    try {
-      const res = await axios.post(url, form);
-      localStorage.setItem('token', res.data.token);
-      navigate('/');
-    } catch (err) {
-      alert(err.response.data.message || 'Error');
-    }
-  };
+     try {
+          const res = await axios.post(url, form);
+          localStorage.setItem('token', res.data.token);
+          if (setToken) setToken(res.data.token); // <--- Оновлюємо стан у App
+        } catch (err) {
+          alert(err.response?.data?.message || 'Error');
+        }
+      };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 px-4">
