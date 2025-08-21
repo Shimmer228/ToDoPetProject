@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import API_URL from "../config";
 import axios from 'axios';
 
 const TodoPage = () => {
@@ -25,7 +26,7 @@ const TodoPage = () => {
 
   const fetchTasks = async () => {
     try {
-      const res = await axios.get('/api/tasks', {
+      const res = await axios.get(`${API_URL}/api/tasks`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setTasks(res.data);
@@ -37,7 +38,7 @@ const TodoPage = () => {
   const handleUpdateTask = async (taskId) => {
     try {
       await axios.put(
-        `/api/tasks/${taskId}`,
+        `${API_URL}/api/tasks/${taskId}`,
         { title: editingTitle, priority: editingPriority },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -56,7 +57,7 @@ const TodoPage = () => {
 
     try {
       await axios.post(
-        '/api/tasks',
+        `${API_URL}/api/tasks`,
         { title: newTask, priority: newPriority },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -71,7 +72,7 @@ const TodoPage = () => {
   const handleToggleStatus = async (taskId, currentStatus) => {
     try {
       await axios.patch(
-        `/api/tasks/${taskId}`,
+        `${API_URL}/api/tasks/${taskId}`,
         { completed: !currentStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -83,7 +84,7 @@ const TodoPage = () => {
 
   const handleDelete = async (taskId) => {
     try {
-      await axios.delete(`/api/tasks/${taskId}`, {
+      await axios.delete(`${API_URL}/api/tasks/${taskId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchTasks();

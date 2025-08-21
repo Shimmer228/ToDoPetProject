@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import API_URL from "../config";
 
 const LoginPage = () => {
   const [form, setForm] = useState({ username: '', password: '' });
@@ -15,7 +16,7 @@ const LoginPage = () => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const url = isLogin ? '/api/auth/login' : '/api/auth/register';
+    const url = isLogin ? `${API_URL}/api/auth/login` : `${API_URL}/api/auth/register`;
 
     if (form.password.length < 6) {
       alert('Password must be at least 6 characters long.');
