@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import API_URL from "../config";
 import axios from 'axios';
 
-const TodoPage = () => {
+const TodoPage = ({onSignOut}) => {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState('');
   const [newPriority, setNewPriority] = useState(1);
@@ -108,16 +108,14 @@ const TodoPage = () => {
         : b.priority - a.priority;
     });
 
+
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4">
       <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Your tasks</h1>
           <button
-            onClick={() => {
-              localStorage.removeItem('token');
-              navigate('/login');
-            }}
+            onClick={onSignOut}
             className="bg-gray-200 text-gray-700 hover:bg-gray-300 px-3 py-1 rounded"
           >
             Sign out

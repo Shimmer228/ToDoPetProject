@@ -12,6 +12,10 @@ const App = () => {
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
+ const handleSignOut = () => {
+    localStorage.removeItem('token');
+    setToken(null);
+  };
   return (
     <Router>
       <Routes>
