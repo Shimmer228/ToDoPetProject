@@ -2,7 +2,7 @@
 **/node_modules/
 
 # збірки React
-todo-client/build/
+#todo-client/build/
 
 # середовищні змінні
 **/.env
