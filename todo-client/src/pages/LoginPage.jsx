@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import API_URL from "../config";
 
-const LoginPage = () => {
+const LoginPage = ({setToken}) => {
   const [form, setForm] = useState({ username: '', password: '' });
   const [isLogin, setIsLogin] = useState(true);
   const navigate = useNavigate();
@@ -15,22 +15,23 @@ const LoginPage = () => {
   };
 
  const handleSubmit = async e => {
-   e.preventDefault();
-   const url = isLogin ? `${API_URL}/api/auth/login` : `${API_URL}/api/auth/register`;
+     e.preventDefault();
+     const url = isLogin ? `${API_URL}/api/auth/login` : `${API_URL}/api/auth/register`;
 
-   if (form.password.length < 6) {
-     alert('Password must be at least 6 characters long.');
-     return;
-   }
+     if (form.password.length < 6) {
+       alert('Password must be at least 6 characters long.');
+       return;
+     }
 
-   try {
-     const res = await axios.post(url, form);
-     localStorage.setItem('token', res.data.token);
-     navigate('/', { replace: true });
-   } catch (err) {
-     alert(err.response?.data?.message || 'Error');
-   }
- };
+     try {
+       const res = await axios.post(url, form);
+       localStorage.setItem('token', res.data.token);
+       setToken(res.data.token); // 🔑 оновлюємо state в App
+       navigate('/'); // одразу редірект
+     } catch (err) {
+       alert(err.response?.data?.message || 'Error');
+     }
+   };
 
 
   return (

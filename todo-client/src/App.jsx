@@ -4,8 +4,7 @@ import LoginPage from './pages/LoginPage';
 import TodoPage from './pages/TodoPage';
 
 const App = () => {
-  const [token, setToken] = useState(localStorage.getItem('token')||null);
-
+  const [token, setToken] = useState(localStorage.getItem('token') || null);
 
   useEffect(() => {
     const handleStorage = () => setToken(localStorage.getItem('token'));
@@ -13,18 +12,20 @@ const App = () => {
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
-   return (
-     <Routes>
-       <Route
-         path="/login"
-         element={token ? <Navigate to="/" replace /> : <LoginPage />}
-       />
-       <Route
-         path="/"
-         element={token ? <TodoPage /> : <Navigate to="/login" replace />}
-       />
-     </Routes>
-   );
- };
+  return (
+    <Router>
+      <Routes>
+        <Route
+          path="/login"
+          element={token ? <Navigate to="/" replace /> : <LoginPage setToken={setToken} />}
+        />
+        <Route
+          path="/"
+          element={token ? <TodoPage /> : <Navigate to="/login" replace />}
+        />
+      </Routes>
+    </Router>
+  );
+};
 
 export default App;
