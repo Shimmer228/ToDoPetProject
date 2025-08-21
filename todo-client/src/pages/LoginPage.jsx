@@ -17,7 +17,6 @@ const LoginPage = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     const url = isLogin ? `${API_URL}/api/auth/login` : `${API_URL}/api/auth/register`;
-    console.log("submit");
     if (form.password.length < 6) {
       alert('Password must be at least 6 characters long.');
       return;
